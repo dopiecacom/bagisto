@@ -22,3 +22,6 @@ Go to https://example.com/admin/, in case `php artisan bagisto:install` is opted
 email: admin@example.com
 password: admin123
 ```
+
+# Allegro
+Working SKU code: `bfe96e64-01f1-4e39-a01a-5b522f3572b7`
