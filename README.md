@@ -1,6 +1,7 @@
 # Installation
 * `composer install`
 * Set you env file variables:
+
 ``` 
 -   APP_TIMEZONE
 -   APP_LOCALE
@@ -10,5 +11,14 @@
 -   DB_USERNAME
 -   DB_PASSWORD 
 ```
+
 * `php artisan bagisto:install`
 * `php artsian serve`
+
+# How to log in to your domain as an admin
+Go to https://example.com/admin/, in case `php artisan bagisto:install` is opted, use the following credentials.
+
+```
+email: admin@example.com
+password: admin123
+```
