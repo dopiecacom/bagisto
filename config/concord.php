@@ -12,7 +12,6 @@ return [
          * VendorB\ModuleY\Providers\ModuleServiceProvider::class
          *
          */
-
         \Webkul\Admin\Providers\ModuleServiceProvider::class,
         \Webkul\Attribute\Providers\ModuleServiceProvider::class,
         \Webkul\BookingProduct\Providers\ModuleServiceProvider::class,
@@ -40,5 +39,7 @@ return [
         \Webkul\Velocity\Providers\ModuleServiceProvider::class,
         \Webkul\Sitemap\Providers\ModuleServiceProvider::class,
 
+        \Emsit\BagistoAllegroAPI\Providers\ModuleServiceProvider::class,
+        \RKREZA\Contact\Providers\ModuleServiceProvider::class,
     ],
 ];
