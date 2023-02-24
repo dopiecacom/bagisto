@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Emsit\BagistoAllegroApi\Http\Controllers\Admin\AllegroAPIAuthenticationController as APIAuthentication;
 use Emsit\BagistoAllegroAPI\Models\AllegroProductData;
 
 class TestListener
@@ -18,14 +19,9 @@ class TestListener
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(APIAuthentication $apiAuthentication)
     {
-        define('CLIENT_ID', '3c71570ab1994753aafe17e86951ce33');
-        define('CLIENT_SECRET', 'JBOlbnJqOVEy5LVn2Lico2oueE0kyA2NCcFmebLp1kVsUFsYxQNefFNdtmsostpA');
-
-        define('REDIRECT_URI', 'http://localhost:8080');
-        define('AUTH_URL', 'https://allegro.pl.allegrosandbox.pl/auth/oauth/authorize');
-        define('TOKEN_URL', 'https://allegro.pl.allegrosandbox.pl/auth/oauth/token');
+        $this->token = $apiAuthentication->getToken();
     }
 
     /**
@@ -36,6 +32,8 @@ class TestListener
      */
     public function handleCreate($event)
     {
+
+
         $response = $this->createOffer($this->token, $event->sku);
 
         AllegroProductData::create([
