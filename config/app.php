@@ -231,7 +231,6 @@ return [
          * Package Service Providers.
          */
         Emsit\BagistoAllegroAPI\Providers\BagistoAllegroAPIServiceProvider::class,
-        RKREZA\Contact\Providers\ContactServiceProvider::class,
         Astrotomic\Translatable\TranslatableServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,

@@ -30,6 +30,17 @@
                         <div class="accordian-content">
                             <div>
                                 <div class="control-group text">
+                                    <label for="client_id">Your redirect URI (copy it to Allegro API registration form)</label>
+                                    <input type="text"
+                                           id="client_id"
+                                           name="client_id"
+                                           data-vv-as="&quot;Redirect URI&quot;"
+                                           value="{{ route('admin.bagistoallegroapi.auth') . '/' }}"
+                                           class="control"
+                                           aria-required="true"
+                                           disabled>
+                                </div>
+                                <div class="control-group text">
                                     <label for="client_id">Client ID</label>
                                     <input type="text"
                                            id="client_id"
@@ -60,7 +71,7 @@
                                                id="sandbox_mode"
                                                name="sandbox_mode"
                                                value="1"
-                                              {!! $data['sandbox_mode'] == 1  ? 'checked="checked"' : null !!}>
+                                            {!! $data['sandbox_mode'] == 1  ? 'checked="checked"' : null !!}>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -68,7 +79,9 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{ $data['authUri'] }}" target="_blank">Zaloguj do Allegro</a>
+                @if (isset($data['authUri']))
+                    <a href="{{ $data['authUri'] }}" target="_blank">Click here to generate access token.</a>
+                @endif
             </div>
         </form>
     </div>

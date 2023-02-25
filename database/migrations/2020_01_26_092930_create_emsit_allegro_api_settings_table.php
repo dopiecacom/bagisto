@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEmsitAllegroApiTokensTable extends Migration
+class CreateEmsitAllegroApiSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateEmsitAllegroApiTokensTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('emsit_allegro_api_tokens')) {
-            Schema::create('emsit_allegro_api_tokens', function (Blueprint $table) {
+        if (!Schema::hasTable('emsit_allegro_api_settings')) {
+            Schema::create('emsit_allegro_api_settings', function (Blueprint $table) {
                 $table->increments('id');
-                $table->text('token');
-                $table->text('refresh_token');
-                $table->datetime('token_expiration_date');
+                $table->text('client_id')->unique();
+                $table->text('client_secret');
+                $table->text('code_verifier');
+                $table->boolean('sandbox_mode');
                 $table->timestamps();
             });
         }
@@ -31,6 +32,6 @@ class CreateEmsitAllegroApiTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emsit_allegro_api_tokens');
+        Schema::dropIfExists('emsit_allegro_api_settings');
     }
 }

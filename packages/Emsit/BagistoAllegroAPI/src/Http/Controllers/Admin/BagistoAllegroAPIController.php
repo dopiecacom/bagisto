@@ -2,13 +2,17 @@
 
 namespace Emsit\BagistoAllegroAPI\Http\Controllers\Admin;
 
+use Emsit\BagistoAllegroAPI\Services\APIAuthenticationService;
+use Emsit\BagistoAllegroAPI\Repositories\AllegroApiSettingsRepository;
+use Emsit\BagistoAllegroAPI\Repositories\AllegroApiTokenRepository;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Emsit\BagistoAllegroAPI\Http\Controllers\Admin\AllegroAPIAuthenticationController as APIAuthController;
-use Emsit\BagistoAllegroAPI\Repositories\AllegroApiSettingsRepository;
+use Illuminate\View\View;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class BagistoAllegroAPIController extends Controller
@@ -22,41 +26,38 @@ class BagistoAllegroAPIController extends Controller
      */
     protected $_config;
 
-    private AllegroApiSettingsRepository $allegroApiSettings;
-    private APIAuthController $APIAuthController;
-
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(AllegroApiSettingsRepository $allegroApiSettings, APIAuthController $APIAuthController)
-    {
+    public function __construct(
+        private readonly AllegroApiSettingsRepository $allegroApiSettings,
+        private readonly AllegroApiTokenRepository $allegroApiToken
+    ) {
         $this->middleware('admin');
 
-        $this->allegroApiSettings = $allegroApiSettings;
-        $this->APIAuthController = $APIAuthController;
         $this->_config = request('_config');
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\View\View
-     * @throws \Exception
+     * @return View
+     * @throws Exception
      */
-    public function index(): \Illuminate\View\View
+    public function index(): View
     {
         $apiSettings = $this->allegroApiSettings->first();
 
         $data = [
-            'client_id'     => $apiSettings->client_id,
-            'client_secret' => $apiSettings->client_secret,
-            'sandbox_mode'  => $apiSettings->sandbox_mode
+            'client_id'     => $apiSettings?->client_id,
+            'client_secret' => $apiSettings?->client_secret,
+            'sandbox_mode'  => $apiSettings?->sandbox_mode
         ];
 
-        if ($apiSettings->client_id != null && $apiSettings->client_secret != null) {
-            $data['authUri'] = $this->APIAuthController->getAuthorizationCode();
+        if ($apiSettings?->client_id != null && $apiSettings?->client_secret != null) {
+            $data['authUri'] = resolve(APIAuthenticationService::class)->getAuthorizationCode();
         }
 
         return view($this->_config['view'], ['data' => $data]);
@@ -66,10 +67,10 @@ class BagistoAllegroAPIController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws ValidatorException
      */
-    public function update(Request $request): \Illuminate\Http\RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         $apiSettings = $this->allegroApiSettings->first();
 
