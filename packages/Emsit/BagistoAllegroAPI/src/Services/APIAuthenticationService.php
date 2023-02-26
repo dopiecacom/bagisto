@@ -7,6 +7,7 @@ use Emsit\BagistoAllegroAPI\Repositories\AllegroApiSettingsRepository;
 use Emsit\BagistoAllegroAPI\Repositories\AllegroApiTokenRepository;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -14,6 +15,8 @@ class APIAuthenticationService
 {
     public string $authUri;
     public string $tokenUri;
+
+    protected $apiSettings;
 
     private readonly string $clientId;
     private readonly string $clientSecret;
@@ -52,6 +55,8 @@ class APIAuthenticationService
                 'headers'     => $headers,
                 'form_params' => $content,
             ]);
+        } catch (ConnectException $ex) {
+            $response = 'Connection with API failed';
         } catch (GuzzleException $ex) {
             $response = $ex->getResponse();
         }
@@ -147,8 +152,11 @@ class APIAuthenticationService
     public function refreshAccessToken(string $refreshToken): string
     {
         $authorization = base64_encode($this->clientId . ':' . $this->clientSecret);
-        $headers = array("Authorization: Basic {$authorization}","Content-Type: application/x-www-form-urlencoded");
-        $content = "grant_type=refresh_token&refresh_token={$refreshToken}&redirect_uri=" . $this->redirectUri;
+
+        $headers = [
+            'Authorization' => "Basic " . $authorization,
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ];
 
         $content = [
             'grant_type'    => 'refresh_token',

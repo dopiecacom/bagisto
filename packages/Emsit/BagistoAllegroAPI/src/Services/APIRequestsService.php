@@ -5,6 +5,7 @@ namespace Emsit\BagistoAllegroAPI\Services;
 use Emsit\BagistoAllegroAPI\Repositories\AllegroApiSettingsRepository;
 use Emsit\BagistoAllegroAPI\Repositories\AllegroProductDataRepository;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -17,14 +18,13 @@ class APIRequestsService
     public function __construct(
         private readonly AllegroApiSettingsRepository $allegroApiSettings,
         private readonly AllegroProductDataRepository $allegroProductData
-    )
-    {
+    ) {
         $this->apiSettings = $this->allegroApiSettings->first();
 
         if ($this->apiSettings->sandbox_mode) {
-            $this->environmentUri = 'https://allegro.pl.allegrosandbox.pl/';
+            $this->environmentUri = 'https://api.allegro.pl.allegrosandbox.pl/';
         } else {
-            $this->environmentUri = 'https://allegro.pl/';
+            $this->environmentUri = 'https://api.allegro.pl/';
         }
     }
 
@@ -41,16 +41,17 @@ class APIRequestsService
 
         try {
             $response = $client->request($method, $url, [
-                'headers'     => $headers,
-                'form_params' => $content,
+                'headers' => $headers,
+                'json' => $content,
             ]);
+        } catch (ConnectException $ex) {
+            $response = 'Connection with API failed';
         } catch (GuzzleException $ex) {
             $response = $ex->getResponse();
         }
 
         return $response;
     }
-
 
     /**
      * @param string $token
@@ -63,11 +64,11 @@ class APIRequestsService
     {
         $url = $this->environmentUri . "sale/product-offers";
 
-        $headers = array(
-            "Authorization: Bearer {$token}",
-            "Accept: application/vnd.allegro.public.v1+json",
-            "Content-Type: application/vnd.allegro.public.v1+json"
-        );
+        $headers = [
+            'Authorization' => "Bearer " . $token,
+            'Accept' => 'application/vnd.allegro.public.v1+json',
+            'Content-Type' => 'application/vnd.allegro.public.v1+json'
+        ];
 
         $content = array(
             "name" => "Ajfon",
@@ -93,20 +94,41 @@ class APIRequestsService
             "stock" => [
                 "available" => 10
             ],
+            "publication" => [
+                "status" => "INACTIVE"
+            ]
         );
 
         $response = $this->apiRequest($url, $headers, $content);
 
-        $this->allegroProductData->create([
-            'allegro_product_id' => $response->id,
-            'shop_product_id'    => $productId
-        ]);
+        if ($response->getStatusCode() == 200 || $response->getStatusCode() == 202){
+            $response = json_decode($response->getBody()->getContents());
+
+            $this->allegroProductData->create([
+                'allegro_product_id' => $response->id,
+                'shop_product_id'    => $productId
+            ]);
+        } else {
+            // ToDo: Handle exceptions
+            report(json_decode($response->getBody()->getContents(true))->errors[0]->userMessage);
+        }
     }
 
-    public function updateOffer(string $token, int|string $offerId, Collection $values)
+    /**
+     * @param string $token
+     * @param int|string $offerId
+     * @param Collection $values
+     * @return void
+     */
+    public function updateOffer(string $token, int|string $offerId, Collection $values): void
     {
-        $headers = array("Authorization: Bearer {$token}", "Accept: application/vnd.allegro.public.v1+json", "Content-Type: application/vnd.allegro.public.v1+json");
         $url = $this->environmentUri . "sale/product-offers/$offerId";
+
+        $headers = [
+            'Authorization' => "Bearer " . $token,
+            'Accept' => 'application/vnd.allegro.public.v1+json',
+            'Content-Type' => 'application/vnd.allegro.public.v1+json'
+        ];
 
         $content = array(
             "sellingMode" => [
@@ -116,31 +138,20 @@ class APIRequestsService
                 ]
             ],
             "stock" => [
-                "available" => 10
+                "available" => $values->get('stock')
             ],
+            "publication" => [
+                "status" => "ACTIVE"
+            ]
         );
-        dd($content);
-        $ch = $this->getCurl($headers, $url, json_encode($content), 'PATCH');
-        $result = curl_exec($ch);
-        $resultCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
-        return json_decode($result);
-    }
+        $response = $this->apiRequest($url, $headers, $content, 'PATCH');
 
-    public function getProducts($token)
-    {
-        $headers = array("Authorization: Bearer {$token}", "Accept: application/vnd.allegro.public.v1+json");
-        $url = "https://api.allegro.pl.allegrosandbox.pl/sale/offers";
-        $ch = $this->getCurl($headers, $url);
-        $mainCategoriesResult = curl_exec($ch);
-        $resultCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        if ($mainCategoriesResult === false || $resultCode !== 200) {
-            var_dump($mainCategoriesResult);
-            exit ("Something went wrong");
+        // ToDo: Handle exceptions
+        if ($response->getStatusCode() == 200 || $response->getStatusCode() == 202){
+            $response = json_decode($response->getBody()->getContents());
+        } else {
+            report(json_decode($response->getBody()->getContents(true))->errors[0]->userMessage);
         }
-        $categoriesList = json_decode($mainCategoriesResult);
-        return $categoriesList;
     }
 }

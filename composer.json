@@ -18,6 +18,7 @@
         "barryvdh/laravel-dompdf": "^2.0.0",
         "diglactic/laravel-breadcrumbs": "^7.0",
         "doctrine/dbal": "^2.9",
+        "emsit/bagisto-allegro-api": "dev-main",
         "enshrined/svg-sanitize": "^0.15.0",
         "fakerphp/faker": "^1.14",
         "flynsarmy/db-blade-compiler": "dev-master",
@@ -79,7 +80,6 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Emsit\\BagistoAllegroAPI\\": "packages/Emsit/BagistoAllegroAPI/src",
             "Webkul\\User\\": "packages/Webkul/User/src",
             "Webkul\\Admin\\": "packages/Webkul/Admin/src",
             "Webkul\\Ui\\": "packages/Webkul/Ui/src",
@@ -154,6 +154,12 @@
             "vendor\\bin\\codecept.bat run api"
         ]
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/Emsit/BagistoAllegroAPI"
+        }
+    ],
     "config": {
         "preferred-install": "stable",
         "sort-packages": true,

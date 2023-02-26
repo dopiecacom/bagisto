@@ -4,9 +4,12 @@ namespace Emsit\BagistoAllegroAPI\Listeners;
 
 use Carbon\Carbon;
 use Emsit\BagistoAllegroAPI\Repositories\AllegroApiTokenRepository;
-use Emsit\BagistoAllegroApi\Services\APIAuthenticationService;
-use Emsit\BagistoAllegroApi\Services\APIRequestsService;
+use Emsit\BagistoAllegroAPI\Repositories\AllegroProductDataRepository;
+use Emsit\BagistoAllegroAPI\Services\APIAuthenticationService;
+use Emsit\BagistoAllegroAPI\Services\APIRequestsService;
+use Illuminate\Support\Facades\DB;
 use Prettus\Validator\Exceptions\ValidatorException;
+use Webkul\Product\Models\ProductFlat;
 
 class TestListener
 {
@@ -19,8 +22,9 @@ class TestListener
      */
     public function __construct(
         private readonly AllegroApiTokenRepository $allegroApiTokens,
-        #private readonly APIAuthenticationService $apiAuthenticationService,
-        #private readonly APIRequestsService $apiRequestsService
+        private readonly AllegroProductDataRepository $allegroProductData,
+        private readonly APIAuthenticationService $apiAuthenticationService,
+        private readonly APIRequestsService $apiRequestsService
     )
     {
         $accessToken = $this->allegroApiTokens->orderBy('id', 'desc')->first();
@@ -41,7 +45,7 @@ class TestListener
      */
     public function handleCreate(object $event): void
     {
-        #$this->apiRequestsService->createOffer($this->token, $event->sku, $event->id);
+        $this->apiRequestsService->createOffer($this->token, $event->sku, $event->id);
     }
 
     /**
@@ -54,12 +58,14 @@ class TestListener
     {
         $product = $event->product_flats->first();
 
-        $offerId = AllegroProductData::where('shop_product_id', $product->product_id)
+
+        $offerId = $this->allegroProductData->where('shop_product_id', $product->product_id)
             ->first()
             ->getAttribute('allegro_product_id');
 
         $values = collect([
-            'price' => round($product->price, 2)
+            'price' => round($product->price, 2),
+            'stock' => $event->totalQuantity()
         ]);
 
         $this->apiRequestsService->updateOffer($this->token, $offerId, $values);
