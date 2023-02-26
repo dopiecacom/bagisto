@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1bced79cdc0591f2f07959f090e4757c",
+    "content-hash": "6b47902068c7a8711792056cba05773c",
     "packages": [
         {
             "name": "astrotomic/laravel-translatable",
@@ -1352,6 +1352,41 @@
                 }
             ],
             "time": "2022-06-18T20:57:19+00:00"
+        },
+        {
+            "name": "emsit/bagisto-allegro-api",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "packages/Emsit/BagistoAllegroAPI",
+                "reference": "81436b1d9e2d3b377e6816163ff49f952f527974"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Emsit\\BagistoAllegroAPI\\Providers\\BagistoAllegroAPIServiceProvider"
+                    ],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Emsit\\BagistoAllegroAPI\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kamil Kośmider",
+                    "email": "k.kosmider@emsit.pl"
+                }
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "enshrined/svg-sanitize",
@@ -12916,6 +12951,7 @@
     "stability-flags": {
         "bagisto/bagisto-package-generator": 20,
         "bagisto/rest-api": 20,
+        "emsit/bagisto-allegro-api": 20,
         "flynsarmy/db-blade-compiler": 20,
         "codeception/codeception": 20,
         "codeception/module-laravel": 20
@@ -12926,5 +12962,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

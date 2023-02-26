@@ -1,0 +1,24 @@
+{
+    "name": "emsit/bagisto-allegro-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kamil Kośmider",
+            "email": "k.kosmider@emsit.pl"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Emsit\\BagistoAllegroAPI\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Emsit\\BagistoAllegroAPI\\Providers\\BagistoAllegroAPIServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}
