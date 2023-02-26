@@ -58,13 +58,12 @@ class TestListener
     {
         $product = $event->product_flats->first();
 
-
         $offerId = $this->allegroProductData->where('shop_product_id', $product->product_id)
             ->first()
             ->getAttribute('allegro_product_id');
 
         $values = collect([
-            'price' => round($product->price, 2),
+            'price' => round($event->price, 2),
             'stock' => $event->totalQuantity()
         ]);
 
