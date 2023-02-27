@@ -71,7 +71,7 @@ class APIRequestsService
         ];
 
         $content = array(
-            "name" => "Ajfon",
+            "name" => "Bagisto Offer",
             "productSet" => [
                 [
                     "product" => [
@@ -101,7 +101,7 @@ class APIRequestsService
 
         $response = $this->apiRequest($url, $headers, $content);
 
-        if ($response->getStatusCode() == 200 || $response->getStatusCode() == 202){
+        if ($response->getStatusCode() == 201 || $response->getStatusCode() == 202){
             $response = json_decode($response->getBody()->getContents());
 
             $this->allegroProductData->create([
@@ -122,6 +122,9 @@ class APIRequestsService
      */
     public function updateOffer(string $token, int|string $offerId, Collection $values): void
     {
+        // ToDo: Image uploads
+        #dd($event->images, Storage::url($event->images[0]['path']));
+
         $url = $this->environmentUri . "sale/product-offers/$offerId";
 
         $headers = [
@@ -131,11 +134,30 @@ class APIRequestsService
         ];
 
         $content = array(
+            "name" => $values->get('name'),
             "sellingMode" => [
                 "price" => [
                     "amount" => $values->get('price'),
                     "currency" => "PLN"
                 ]
+            ],
+            "description" => [
+                "sections" => [
+                    [
+                        "items" => [
+                            [
+                                "type"    => "TEXT",
+                                "content" => $values->get('description')
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "location" => [
+                "city" => $values->get('location')->get('city'),
+                "countryCode" => $values->get('location')->get('country'),
+                "postCode" => $values->get('location')->get('zipcode'),
+                "province" => str_replace(array('-', ' '), '_', strtoupper($values->get('location')->get('state')))
             ],
             "stock" => [
                 "available" => $values->get('stock')

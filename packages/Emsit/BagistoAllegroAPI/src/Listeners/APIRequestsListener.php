@@ -7,11 +7,9 @@ use Emsit\BagistoAllegroAPI\Repositories\AllegroApiTokenRepository;
 use Emsit\BagistoAllegroAPI\Repositories\AllegroProductDataRepository;
 use Emsit\BagistoAllegroAPI\Services\APIAuthenticationService;
 use Emsit\BagistoAllegroAPI\Services\APIRequestsService;
-use Illuminate\Support\Facades\DB;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Webkul\Product\Models\ProductFlat;
 
-class TestListener
+class APIRequestsListener
 {
     private string $token;
 
@@ -63,8 +61,18 @@ class TestListener
             ->getAttribute('allegro_product_id');
 
         $values = collect([
-            'price' => round($event->price, 2),
-            'stock' => $event->totalQuantity()
+            'name'        => $event->name,
+            'description' => $event->description,
+            'images'      => $event->images,
+            'price'       => round($event->price, 2),
+            'stock'       => $event->totalQuantity(),
+            'location'    => collect([
+                'country'  => core()->getConfigData('sales.shipping.origin.country'),
+                'state'    => core()->getConfigData('sales.shipping.origin.state'),
+                'city'     => core()->getConfigData('sales.shipping.origin.city'),
+                'address1' => core()->getConfigData('sales.shipping.origin.address1'),
+                'zipcode'  => core()->getConfigData('sales.shipping.origin.zipcode')
+            ])
         ]);
 
         $this->apiRequestsService->updateOffer($this->token, $offerId, $values);

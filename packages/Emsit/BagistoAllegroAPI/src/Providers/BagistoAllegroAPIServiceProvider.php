@@ -32,8 +32,8 @@ class BagistoAllegroAPIServiceProvider extends ServiceProvider
             $viewRenderEventManager->addTemplate('bagistoallegroapi::admin.layouts.style');
         });
 
-        Event::listen('catalog.product.create.after', [\Emsit\BagistoAllegroAPI\Listeners\TestListener::class, 'handleCreate']);
-        Event::listen('catalog.product.update.after', [\Emsit\BagistoAllegroAPI\Listeners\TestListener::class, 'handleUpdate']);
+        Event::listen('catalog.product.create.after', [\Emsit\BagistoAllegroAPI\Listeners\APIRequestsListener::class, 'handleCreate']);
+        Event::listen('catalog.product.update.after', [\Emsit\BagistoAllegroAPI\Listeners\APIRequestsListener::class, 'handleUpdate']);
     }
 
     /**

@@ -139,7 +139,7 @@ class APIAuthenticationService
 
                 break;
             default:
-                session()->flash('error', $response->getReasonPhrase() . 'Check your credentials, refresh the page and try again.');
+                session()->flash('error', $response->getReasonPhrase() . ': Check your credentials, refresh the page and try again.');
 
                 break;
         }
@@ -155,7 +155,7 @@ class APIAuthenticationService
 
         $headers = [
             'Authorization' => "Basic " . $authorization,
-            'Content-Type' => 'application/x-www-form-urlencoded'
+            'Content-Type'  => 'application/x-www-form-urlencoded'
         ];
 
         $content = [

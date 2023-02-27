@@ -9,8 +9,8 @@ Route::group(['prefix' => 'admin/bagistoallegroapi', 'middleware' => ['web', 'ad
     Route::post('update', [Emsit\BagistoAllegroAPI\Http\Controllers\Admin\BagistoAllegroAPIController::class, 'update'])
         ->name('admin.bagistoallegroapi.update');
 
-    Route::get('auth', [Emsit\BagistoAllegroAPI\Http\Controllers\Admin\AllegroAPIAuthenticationController::class, 'getToken'])
-        ->defaults('_config', ['view' => 'bagistoallegroapi::admin.auth',])
+    Route::get('auth', [Emsit\BagistoAllegroAPI\Http\Controllers\Admin\BagistoAllegroAPIController::class, 'getToken'])
+        ->defaults('_config', ['view' => 'bagistoallegroapi::admin.index',])
         ->name('admin.bagistoallegroapi.auth');
 
 });

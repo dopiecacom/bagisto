@@ -12,6 +12,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -48,17 +49,7 @@ class BagistoAllegroAPIController extends Controller
      */
     public function index(): View
     {
-        $apiSettings = $this->allegroApiSettings->first();
-
-        $data = [
-            'client_id'     => $apiSettings?->client_id,
-            'client_secret' => $apiSettings?->client_secret,
-            'sandbox_mode'  => $apiSettings?->sandbox_mode
-        ];
-
-        if ($apiSettings?->client_id != null && $apiSettings?->client_secret != null) {
-            $data['authUri'] = resolve(APIAuthenticationService::class)->getAuthorizationCode();
-        }
+        $data = $this->getViewData();
 
         return view($this->_config['view'], ['data' => $data]);
     }
@@ -92,5 +83,45 @@ class BagistoAllegroAPIController extends Controller
         session()->flash('success', 'API information updated.');
 
         return redirect()->back();
+    }
+
+    /**
+     * @return View
+     * @throws Exception
+     */
+    public function getToken(): View
+    {
+        $data = $this->getViewData();
+
+        $codeVerifier = $data->get('codeVerifier');
+
+        if (isset($_GET["code"])) {
+            resolve(APIAuthenticationService::class)->generateAccessToken($_GET["code"], $codeVerifier);
+        } else {
+            session()->flash('error', 'No verification code provided. Use link in the form in order to generate access token.');
+        }
+
+        return view($this->_config['view'], ['data' => $data]);
+    }
+
+    /**
+     * @return Collection
+     */
+    protected function getViewData(): Collection
+    {
+        $apiSettings = $this->allegroApiSettings->first();
+
+        $data = [
+            'clientId'     => $apiSettings?->client_id,
+            'clientSecret' => $apiSettings?->client_secret,
+            'sandboxMode'  => $apiSettings?->sandbox_mode,
+            'codeVerifier' => $apiSettings?->code_verifier
+        ];
+
+        if ($apiSettings?->client_id != null && $apiSettings?->client_secret != null) {
+            $data['authUri'] = resolve(APIAuthenticationService::class)->getAuthorizationCode();
+        }
+
+        return collect($data);
     }
 }
