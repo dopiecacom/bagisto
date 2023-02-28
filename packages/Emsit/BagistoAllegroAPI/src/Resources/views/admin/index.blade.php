@@ -46,7 +46,7 @@
                                            id="client_id"
                                            name="client_id"
                                            data-vv-as="&quot;Client ID&quot;"
-                                           value="{{ $data['client_id'] }}"
+                                           value="{{ $data->get('clientId') }}"
                                            class="control"
                                            aria-required="true"
                                            required>
@@ -56,7 +56,7 @@
                                     <input type="text"
                                            id="client_secret"
                                            name="client_secret"
-                                           value="{{ $data['client_secret'] }}"
+                                           value="{{ $data->get('clientSecret') }}"
                                            data-vv-as="&quot;Client Secret&quot;"
                                            class="control"
                                            aria-required="true"
@@ -71,7 +71,7 @@
                                                id="sandbox_mode"
                                                name="sandbox_mode"
                                                value="1"
-                                            {!! $data['sandbox_mode'] == 1  ? 'checked="checked"' : null !!}>
+                                            {!! $data->get('sandboxMode') == 1  ? 'checked="checked"' : null !!}>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -79,8 +79,8 @@
                         </div>
                     </div>
                 </div>
-                @if (isset($data['authUri']))
-                    <a href="{{ $data['authUri'] }}" target="_blank">Click here to generate access token.</a>
+                @if ($data->get('authUri'))
+                    <a href="{{ $data->get('authUri') }}" target="_blank">Click here to generate access token.</a>
                 @endif
             </div>
         </form>
