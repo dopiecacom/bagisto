@@ -8,12 +8,15 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class APIRequestsService
 {
+    private Client $client;
     private mixed $apiSettings;
     private string $environmentUri;
+    private string $uploadUri;
 
     public function __construct(
         private readonly AllegroApiSettingsRepository $allegroApiSettings,
@@ -23,9 +26,13 @@ class APIRequestsService
 
         if ($this->apiSettings->sandbox_mode) {
             $this->environmentUri = 'https://api.allegro.pl.allegrosandbox.pl/';
+            $this->uploadUri = 'https://upload.allegro.pl.allegrosandbox.pl/';
         } else {
             $this->environmentUri = 'https://api.allegro.pl/';
+            $this->uploadUri = 'https://upload.allegro.pl';
         }
+
+        $this->client = new Client();
     }
 
     /**
@@ -37,13 +44,52 @@ class APIRequestsService
      */
     private function apiRequest(string $url, array $headers, array $content = array(), string $method = 'POST'): mixed
     {
-        $client = new Client();
-
         try {
-            $response = $client->request($method, $url, [
+            $response = $this->client->request($method, $url, [
                 'headers' => $headers,
                 'json' => $content,
             ]);
+        } catch (ConnectException $ex) {
+            $response = 'Connection with API failed';
+        } catch (GuzzleException $ex) {
+            $response = $ex->getResponse();
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $token
+     * @param Collection $images
+     * @return Collection
+     */
+    private function imageUpload(string $token, Collection $images): mixed
+    {
+        try {
+            $headers = [
+                'Authorization' => "Bearer " . $token,
+                'Accept' => 'application/vnd.allegro.public.v1+json',
+                'Content-Type' => 'image/jpeg', 'image/png', 'image/webp'
+            ];
+
+            $responseArray = [];
+
+            foreach ($images as $image) {
+                $imagePath = public_path() . '/storage/' . $image->getAttribute('path');
+
+                $response = $this->client->post($this->uploadUri . 'sale/images', [
+                    'headers' => $headers,
+                    'body'    => file_get_contents($imagePath),
+                ])->getBody()->getContents();
+
+                $responseArray[] = json_decode($response);
+            }
+
+            foreach ($responseArray as $locationUri) {
+                $locationUris[] = $locationUri->location;
+            }
+
+            return $locationUris;
         } catch (ConnectException $ex) {
             $response = 'Connection with API failed';
         } catch (GuzzleException $ex) {
@@ -122,8 +168,7 @@ class APIRequestsService
      */
     public function updateOffer(string $token, int|string $offerId, Collection $values): void
     {
-        // ToDo: Image uploads
-        #dd($event->images, Storage::url($event->images[0]['path']));
+        $uploadedImages = $this->imageUpload($token, $values->get('images'));
 
         $url = $this->environmentUri . "sale/product-offers/$offerId";
 
@@ -153,6 +198,7 @@ class APIRequestsService
                     ]
                 ]
             ],
+            "images" => $uploadedImages,
             "location" => [
                 "city" => $values->get('location')->get('city'),
                 "countryCode" => $values->get('location')->get('country'),
