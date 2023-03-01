@@ -231,12 +231,10 @@ return [
          * Package Service Providers.
          */
         Emsit\BagistoAllegroAPI\Providers\BagistoAllegroAPIServiceProvider::class,
+        Emsit\BagistoPayUPayments\Providers\BagistoPayUPaymentsServiceProvider::class,
         Astrotomic\Translatable\TranslatableServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-
-        // Payu provider
-        Wontonee\Payu\Providers\PayuServiceProvider::class,
 
         /*
          * Application Service Providers.

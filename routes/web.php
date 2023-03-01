@@ -10,3 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use Illuminate\Support\Facades\Route;
+
+#Route::get('payu-success', [Emsit\BagistoPayUPayments\Http\Controllers\Shop\BagistoPayUPaymentsController::class, 'success'])->name('payu.success');
