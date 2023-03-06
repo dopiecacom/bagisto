@@ -232,6 +232,7 @@ return [
          */
         Emsit\BagistoAllegroAPI\Providers\BagistoAllegroAPIServiceProvider::class,
         Emsit\BagistoPayUPayments\Providers\BagistoPayUPaymentsServiceProvider::class,
+        RKREZA\Contact\Providers\ContactServiceProvider::class,
         Astrotomic\Translatable\TranslatableServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,

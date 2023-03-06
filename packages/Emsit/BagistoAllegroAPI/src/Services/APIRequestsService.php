@@ -168,8 +168,6 @@ class APIRequestsService
      */
     public function updateOffer(string $token, int|string $offerId, Collection $values): void
     {
-        $uploadedImages = $this->imageUpload($token, $values->get('images'));
-
         $url = $this->environmentUri . "sale/product-offers/$offerId";
 
         $headers = [
@@ -198,7 +196,6 @@ class APIRequestsService
                     ]
                 ]
             ],
-            "images" => $uploadedImages,
             "location" => [
                 "city" => $values->get('location')->get('city'),
                 "countryCode" => $values->get('location')->get('country'),
@@ -208,10 +205,14 @@ class APIRequestsService
             "stock" => [
                 "available" => $values->get('stock')
             ],
-            "publication" => [
+            "publishable" => [
                 "status" => "ACTIVE"
             ]
         );
+
+        if ($values->get('images')->isNotEmpty()) {
+            $content["images"] = $this->imageUpload($token, $values->get('images'));
+        }
 
         $response = $this->apiRequest($url, $headers, $content, 'PATCH');
 
