@@ -231,6 +231,7 @@ return [
          * Package Service Providers.
          */
         Emsit\BagistoAllegroAPI\Providers\BagistoAllegroAPIServiceProvider::class,
+        Emsit\BagistoInPostShipping\Providers\BagistoInPostShippingServiceProvider::class,
         Emsit\BagistoPayUPayments\Providers\BagistoPayUPaymentsServiceProvider::class,
         RKREZA\Contact\Providers\ContactServiceProvider::class,
         Astrotomic\Translatable\TranslatableServiceProvider::class,

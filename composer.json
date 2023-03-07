@@ -111,6 +111,7 @@
             "Webkul\\Notification\\": "packages/Webkul/Notification/src",
             "Webkul\\Sitemap\\": "packages/Webkul/Sitemap/src",
             "Emsit\\BagistoAllegroAPI\\": "packages/Emsit/BagistoAllegroAPI/src",
+            "Emsit\\BagistoInPostShipping\\": "packages/Emsit/BagistoInPostShipping/src",
             "Emsit\\BagistoPayUPayments\\": "packages/Emsit/BagistoPayUPayments/src",
             "RKREZA\\Contact\\": "packages/RKREZA/Contact/src"
         }
