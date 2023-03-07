@@ -41,5 +41,6 @@ return [
         \Webkul\Sitemap\Providers\ModuleServiceProvider::class,
 
         \Emsit\BagistoAllegroAPI\Providers\ModuleServiceProvider::class,
+        \RKREZA\Contact\Providers\ModuleServiceProvider::class
     ],
 ];
