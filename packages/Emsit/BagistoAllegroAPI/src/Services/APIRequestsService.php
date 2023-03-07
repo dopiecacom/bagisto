@@ -205,7 +205,7 @@ class APIRequestsService
             "stock" => [
                 "available" => $values->get('stock')
             ],
-            "publishable" => [
+            "publication" => [
                 "status" => "ACTIVE"
             ]
         );
