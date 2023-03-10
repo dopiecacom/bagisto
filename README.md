@@ -26,6 +26,7 @@ password: admin123
 # Allegro
 Working SKU code: `bfe96e64-01f1-4e39-a01a-5b522f3572b7`
 
+
 # bagisto:install vs concord.php
 After installation check `config/concord.php` and add these lines at the bottom of the `modules` array if they're missing:
 ```
