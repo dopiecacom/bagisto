@@ -33,3 +33,6 @@ After installation check `config/concord.php` and add these lines at the bottom 
 \Emsit\BagistoAllegroAPI\Providers\ModuleServiceProvider::class,
 \RKREZA\Contact\Providers\ModuleServiceProvider::class
 ```
+
+# PaczkomatyLocationsSeeder
+Run `php artisan db:seed --class=Emsit\BagistoInPostShipping\Database\Seeders\DatabaseSeeder`. It may take up to 11 minutes.
