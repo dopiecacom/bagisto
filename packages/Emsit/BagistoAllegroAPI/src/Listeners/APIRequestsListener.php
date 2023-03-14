@@ -11,7 +11,7 @@ use Prettus\Validator\Exceptions\ValidatorException;
 
 class APIRequestsListener
 {
-    private string $token;
+    private string|null $token;
 
     /**
      * Create the event listener.
@@ -19,19 +19,12 @@ class APIRequestsListener
      * @return void
      */
     public function __construct(
-        private readonly AllegroApiTokenRepository $allegroApiTokens,
         private readonly AllegroProductDataRepository $allegroProductData,
         private readonly APIAuthenticationService $apiAuthenticationService,
         private readonly APIRequestsService $apiRequestsService
     )
     {
-        $accessToken = $this->allegroApiTokens->orderBy('id', 'desc')->first();
-
-        if ($accessToken->token_expiration_date < Carbon::now()) {
-            $this->token = $this->apiAuthenticationService->refreshAccessToken($accessToken->refresh_token);
-        } else {
-            $this->token = $accessToken->token;
-        }
+        //
     }
 
     /**
@@ -43,7 +36,11 @@ class APIRequestsListener
      */
     public function handleCreate(object $event): void
     {
-        $this->apiRequestsService->createOffer($this->token, $event->sku, $event->id);
+        $this->token = $this->apiAuthenticationService->getToken();
+
+        if ($this->token) {
+            $this->apiRequestsService->createOffer($this->token, $event->sku, $event->id);
+        }
     }
 
     /**
@@ -54,6 +51,12 @@ class APIRequestsListener
      */
     public function handleUpdate(object $event): void
     {
+        $this->token = $this->apiAuthenticationService->getToken();
+
+        if ($this->token == null) {
+            return;
+        }
+
         $product = $event->product_flats->first();
 
         $offerId = $this->allegroProductData->where('shop_product_id', $product->product_id)

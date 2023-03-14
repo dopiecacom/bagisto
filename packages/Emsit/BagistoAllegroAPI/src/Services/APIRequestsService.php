@@ -24,6 +24,10 @@ class APIRequestsService
     ) {
         $this->apiSettings = $this->allegroApiSettings->first();
 
+        if ($this->apiSettings == null) {
+            return;
+        }
+
         if ($this->apiSettings->sandbox_mode) {
             $this->environmentUri = 'https://api.allegro.pl.allegrosandbox.pl/';
             $this->uploadUri = 'https://upload.allegro.pl.allegrosandbox.pl/';
@@ -135,7 +139,7 @@ class APIRequestsService
                 "city" => "Warszawa",
                 "countryCode" => "PL",
                 "postCode" => "00-121",
-                "province" => "WIELKOPOLSKIE"
+                "province" => "MAZOWIECKIE"
             ],
             "stock" => [
                 "available" => 10
@@ -190,7 +194,7 @@ class APIRequestsService
                         "items" => [
                             [
                                 "type"    => "TEXT",
-                                "content" => $values->get('description')
+                                "content" => '<p>' . $values->get('description') . '</p>'
                             ]
                         ]
                     ]

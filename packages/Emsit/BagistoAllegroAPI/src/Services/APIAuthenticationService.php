@@ -28,6 +28,10 @@ class APIAuthenticationService
     ) {
         $this->apiSettings = $this->allegroApiSettings->first();
 
+        if ($this->apiSettings == null) {
+            return;
+        }
+
         $this->clientId = $this->apiSettings->client_id;
         $this->clientSecret = $this->apiSettings->client_secret;
         $this->redirectUri = route('admin.bagistoallegroapi.auth') . '/';
@@ -142,6 +146,24 @@ class APIAuthenticationService
                 session()->flash('error', $response->getReasonPhrase() . ': Check your credentials, refresh the page and try again.');
 
                 break;
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getToken(): string|null
+    {
+        $accessToken = $this->allegroApiToken->orderBy('id', 'desc')->first();
+
+        if ($accessToken == null) {
+            return null;
+        }
+
+        if ($accessToken->token_expiration_date < Carbon::now()) {
+            return $this->refreshAccessToken($accessToken->refresh_token);
+        } else {
+            return $accessToken->token;
         }
     }
 

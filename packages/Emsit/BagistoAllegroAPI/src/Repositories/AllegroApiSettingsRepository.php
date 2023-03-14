@@ -4,7 +4,6 @@ namespace Emsit\BagistoAllegroAPI\Repositories;
 
 use Illuminate\Container\Container as App;
 use Webkul\Core\Eloquent\Repository;
-use Emsit\BagistoAllegroAPI\Models\AllegroApiSettings;
 
 class AllegroApiSettingsRepository extends Repository
 {
