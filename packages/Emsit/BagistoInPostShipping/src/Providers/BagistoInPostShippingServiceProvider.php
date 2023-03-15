@@ -31,7 +31,6 @@ class BagistoInPostShippingServiceProvider extends ServiceProvider
                 $viewRenderEventManager->addTemplate('bagistoinpostshipping::shop.dropdown');
             }
         });
-
     }
 
     /**
