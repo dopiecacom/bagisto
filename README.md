@@ -2,7 +2,7 @@
 * `composer install`
 * `php artisan bagisto:install`
 * `php artisan optimize`
-* `php artsian serve`
+* `php artisan serve`
 
 # How to log in to your domain as an admin
 Go to https://example.com/admin/, in case `php artisan bagisto:install` is opted, use the following credentials.
