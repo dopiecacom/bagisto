@@ -12,9 +12,6 @@ $(document).ready(function () {
                         let locationsContainer = $('#paczkomaty_locations_dropdown');
                         let locationsInput = $('#paczkomaty_locations_search');
 
-                        let paymentSection = $('#payment-section');
-                        let summarySection = $('#summary-section');
-
                         defaultInput = locationsInput.val();
 
                         // Add a change event listener to the radio button
@@ -26,15 +23,20 @@ $(document).ready(function () {
                                 // Handle the event
                                 locationsContainer.show();
                                 handlePaczkomatyLocations();
-                                paymentSection.hide();
-                                summarySection.hide();
+                                $('#payment-section').hide();
+                                $('#summary-section').hide();
                             } else {
                                 locationsContainer.hide();
-                                paymentSection.show();
-                                summarySection.show();
+                                $('#payment-section').show();
+                                $('#summary-section').show();
+                                clearInput = false;
                                 locationsInput.val(defaultInput);
                             }
                         })
+                    }
+
+                    if ($(node).is('#payment-section') && selectedShipping === 'bagistoinpostshipping_bagistoinpostshipping') {
+                        $('#payment-section').hide();
                     }
                 })
             }
@@ -94,6 +96,8 @@ $(document).ready(function () {
                 return this.value.toUpperCase() === val.toUpperCase();
             }).length) {
                 setDeliveryLocation();
+                $('#payment-section').show();
+                $('#summary-section').show();
             }
         });
     }
