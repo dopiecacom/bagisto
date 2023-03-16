@@ -27,5 +27,8 @@ After installation check `config/concord.php` and add these lines at the bottom 
 # Publishing packages assets
 `php artisan vendor:publish --force` and select package assets for publishing.
 
+Add code below to the `resources\themes\velocity\views\layouts\scripts.blade.php`:
+`<script type="text/javascript" src="{{ asset('themes/default/assets/js/inpost_shipping.js') }}"></script>`
+
 # PaczkomatyLocationsSeeder
 Run `php artisan db:seed --class=Emsit\BagistoInPostShipping\Database\Seeders\DatabaseSeeder`. It may take up to 11 minutes.
