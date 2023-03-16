@@ -31,6 +31,7 @@ Working SKU code: `bfe96e64-01f1-4e39-a01a-5b522f3572b7`
 After installation check `config/concord.php` and add these lines at the bottom of the `modules` array if they're missing:
 ```
 \Emsit\BagistoAllegroAPI\Providers\ModuleServiceProvider::class,
+\Emsit\BagistoInPostShipping\Providers\ModuleServiceProvider::class,
 \RKREZA\Contact\Providers\ModuleServiceProvider::class
 ```
 
