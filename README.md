@@ -13,6 +13,7 @@
 ```
 
 * `php artisan bagisto:install`
+* `php artisan optimize`
 * `php artsian serve`
 
 # How to log in to your domain as an admin
@@ -34,6 +35,9 @@ After installation check `config/concord.php` and add these lines at the bottom 
 \Emsit\BagistoInPostShipping\Providers\ModuleServiceProvider::class,
 \RKREZA\Contact\Providers\ModuleServiceProvider::class
 ```
+
+# Publishing packages assets
+`php artisan vendor:publish --force` and select package assets for publishing.
 
 # PaczkomatyLocationsSeeder
 Run `php artisan db:seed --class=Emsit\BagistoInPostShipping\Database\Seeders\DatabaseSeeder`. It may take up to 11 minutes.
