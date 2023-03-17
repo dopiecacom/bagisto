@@ -10,9 +10,6 @@ $(document).ready(function () {
                     // Check if the added node is a shipping section
                     if ($(node).is('#shipping-section')) {
                         let locationsContainer = $('#paczkomaty_locations_dropdown');
-                        let locationsInput = $('#paczkomaty_locations_search');
-
-                        defaultInput = locationsInput.val();
 
                         // Add a change event listener to the radio button
                         $('input[type="radio"][name="shipping_method"]').on('change', function () {
@@ -29,8 +26,6 @@ $(document).ready(function () {
                                 locationsContainer.hide();
                                 $('#payment-section').show();
                                 $('#summary-section').show();
-                                clearInput = false;
-                                locationsInput.val(defaultInput);
                             }
                         })
                     }
@@ -45,8 +40,6 @@ $(document).ready(function () {
 
     const baseUrl = window.location.origin;
 
-    let clearInput = false;
-    let defaultInput = '';
     let selectedShipping = '';
 
     // Start observing the DOM tree for changes
@@ -59,55 +52,45 @@ $(document).ready(function () {
      */
     function handlePaczkomatyLocations() {
         let locationsInput = $('#paczkomaty_locations_search');
-        let locationsDatalist = $('#paczkomaty_locations');
+        let selectedValue = null;
 
-        locationsInput.click(function () {
-            if (clearInput === false) {
-                locationsInput.val('');
-                clearInput = true;
+        locationsInput.flexdatalist({
+            minLength: 0,
+            searchIn: ['name', 'address', 'post_code', 'city'],
+            url: `${baseUrl}/bagistoinpostshipping/locations-query/`,
+            dataType: 'json',
+            valueProperty: ['name', 'address', 'post_code', 'city'],
+            render: function (data) {
+                return `<option value="${data.name}" data-address="${data.address}" data-post-code="${data.post_code}" data-city="${data.city}">${data.name}, ${data.address}, ${data.post_code}, ${data.city}</option>`;
+            },
+            visibleProperties: ['name', 'address', 'post_code', 'city'],
+            noResultsText: 'Brak wyników wyszukiwania...'
+        });
+
+        $('#paczkomaty_locations_search-flexdatalist').on('click focus', function() {
+            $(this).val('');
+        });
+
+        $('#paczkomaty_locations_search-flexdatalist').on('blur', function () {
+            // If no new value is selected, insert the saved one
+            if (selectedValue != null) {
+                locationsInput.flexdatalist('value', selectedValue);
+                $('#paczkomaty_locations_search-flexdatalist').val(selectedValue);
             }
         });
 
-        locationsInput.keyup(function () {
-            $.ajaxSetup({
-                headers:
-                    {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
-            });
-            $.ajax({
-                url: `${baseUrl}/bagistoinpostshipping/locations-query/${$(this).val()}`,
-                type: "GET",
-                success: function (response) {
-                    locationsDatalist.empty();
-                    $.each(response, function (key, value) {
-                        locationsDatalist.append(`
-                            <option value="[${value['name']}] ${value['address']} ${value['post_code']} ${value['city']}">
-                            </option>`);
-                    });
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(textStatus, errorThrown);
-                }
-            });
-        });
-
-        locationsInput.on('input', function () {
-            let val = this.value;
-            if ($('#paczkomaty_locations option').filter(function () {
-                return this.value.toUpperCase() === val.toUpperCase();
-            }).length) {
-                setDeliveryLocation();
-                $('#payment-section').show();
-                $('#summary-section').show();
-            }
+        locationsInput.on('select:flexdatalist', function(event, data) {
+            selectedValue = data.name;
+            setDeliveryLocation(data.name);
+            $('#payment-section').show();
+            $('#summary-section').show();
         });
     }
 
     /**
      * Set selected location as new shipping address.
      */
-    function setDeliveryLocation() {
-        let location = $('#paczkomaty_locations_search').val();
-
+    function setDeliveryLocation(location) {
         $.ajaxSetup({
             headers:
                 {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
@@ -116,7 +99,13 @@ $(document).ready(function () {
             url: `${baseUrl}/bagistoinpostshipping/location-selected/${location}`,
             type: "GET",
             success: function (response) {
-                //
+                if ($('.shipping-address').length > 0) {
+                    let shippingAddressInfo = $('.shipping-address .card-content ul').children('li');
+                    shippingAddressInfo[1].innerHTML = `${response.first_name} ${response.last_name}`;
+                    shippingAddressInfo[2].innerHTML = `${response.address1}`;
+                    shippingAddressInfo[3].innerHTML = `${response.postcode} ${response.city}`;
+                    shippingAddressInfo[4].innerHTML = `${response.state}`;
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
