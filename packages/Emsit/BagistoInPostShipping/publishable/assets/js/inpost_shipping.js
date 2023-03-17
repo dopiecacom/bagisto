@@ -46,9 +46,10 @@ $(document).ready(function () {
     observer.observe(document.body, {childList: true, subtree: true});
 
     /**
-     * Get InPost Paczkomaty locations based on user input (keyup function).
-     * If item is selected or inserted manually (on input function), and it matches item in datalist
-     * save it as new shipping address.
+     * Get InPost Paczkomaty locations based on user input.
+     * If item is selected (select:flexdatalist), save it as a new shipping address.
+     *
+     * Click/focus function clears input on click and blur retrieves it back.
      */
     function handlePaczkomatyLocations() {
         let locationsInput = $('#paczkomaty_locations_search');
@@ -60,8 +61,8 @@ $(document).ready(function () {
             url: `${baseUrl}/bagistoinpostshipping/locations-query/`,
             dataType: 'json',
             valueProperty: ['name', 'address', 'post_code', 'city'],
-            render: function (data) {
-                return `<option value="${data.name}" data-address="${data.address}" data-post-code="${data.post_code}" data-city="${data.city}">${data.name}, ${data.address}, ${data.post_code}, ${data.city}</option>`;
+            textProperty: function (item) {
+                return `${item.name}, ${item.address}, ${item.post_code}, ${item.city}`;
             },
             visibleProperties: ['name', 'address', 'post_code', 'city'],
             noResultsText: 'Brak wyników wyszukiwania...'
@@ -74,13 +75,13 @@ $(document).ready(function () {
         $('#paczkomaty_locations_search-flexdatalist').on('blur', function () {
             // If no new value is selected, insert the saved one
             if (selectedValue != null) {
-                locationsInput.flexdatalist('value', selectedValue);
                 $('#paczkomaty_locations_search-flexdatalist').val(selectedValue);
             }
         });
 
         locationsInput.on('select:flexdatalist', function(event, data) {
-            selectedValue = data.name;
+            selectedValue = `${data.name} ${data.address} ${data.post_code} ${data.city}`;
+            $('#paczkomaty_locations_search-flexdatalist').val(selectedValue);
             setDeliveryLocation(data.name);
             $('#payment-section').show();
             $('#summary-section').show();
@@ -88,7 +89,9 @@ $(document).ready(function () {
     }
 
     /**
-     * Set selected location as new shipping address.
+     * Set selected location as new shipping address and (on success) replace shipping info with new values.
+     *
+     * @param location
      */
     function setDeliveryLocation(location) {
         $.ajaxSetup({
