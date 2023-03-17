@@ -33,7 +33,9 @@ Add code below to the bottom of the `resources\themes\velocity\views\layouts\scr
 <script type="text/javascript" src="{{ asset('themes/default/assets/js/inpost_shipping.js') }}"></script>
 ```
 ... and to the bottom of the `resources\themes\velocity\views\layouts\styles.blade.php` file:\
-`<link rel="stylesheet" href="{{ asset('themes/default/assets/css/jquery.flexdatalist.min.css') }}" />`
+```
+<link rel="stylesheet" href="{{ asset('themes/default/assets/css/jquery.flexdatalist.min.css') }}" />
+```
 
 # PaczkomatyLocationsSeeder
 Run `php artisan db:seed --class=Emsit\BagistoInPostShipping\Database\Seeders\DatabaseSeeder`. It may take up to 11 minutes.
